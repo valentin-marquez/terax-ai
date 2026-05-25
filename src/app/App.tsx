@@ -80,6 +80,7 @@ import {
 import { StatusBar } from "@/modules/statusbar";
 import { MAX_PANES_PER_TAB, useTabs, useWorkspaceCwd } from "@/modules/tabs";
 import {
+  cleanupTempClipboardImages,
   disposeSession,
   findLeafCwd,
   hasLeaf,
@@ -324,6 +325,9 @@ export default function App() {
         }
       })
       .catch(() => setHome(null));
+    // Image-paste temp files accumulate in $TMPDIR; clear anything older than
+    // 24h on startup. Fire-and-forget — failure is non-fatal.
+    void cleanupTempClipboardImages();
   }, []);
 
   const switchWorkspace = useCallback(
