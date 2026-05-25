@@ -25,10 +25,12 @@ const READ_BUF: usize = 16 * 1024;
 // Dropping a partial prefix would slice a CSI sequence in half and corrupt
 // xterm's screen state. 4 MiB is ~1000 full 80x24 screens.
 const MAX_PENDING: usize = 4 * 1024 * 1024;
-// Hard reset (ESC c) + dim notice. Written verbatim into the stream when
-// we're forced to discard backlog.
+// CAN (0x18) + SGR reset + dim notice. Written verbatim into the stream when
+// we're forced to discard backlog. CAN returns the xterm parser to ground
+// state, killing any CSI/OSC sliced by the discard; unlike RIS (ESC c) it
+// preserves screen, scrollback and modes so an active TUI session survives.
 const OVERFLOW_NOTICE: &[u8] =
-    b"\x1bc\x1b[2m[terax: dropped output due to backpressure]\x1b[0m\r\n";
+    b"\x18\x1b[0m\x1b[2m[terax: dropped output due to backpressure]\x1b[0m\r\n";
 
 pub struct Session {
     // Field drop order is intentional. Rust drops fields top-to-bottom:

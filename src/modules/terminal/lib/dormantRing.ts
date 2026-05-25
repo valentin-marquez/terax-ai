@@ -1,8 +1,12 @@
 const DEFAULT_BYTE_CAP = 256 * 1024;
 const DEFAULT_CHUNK_CAP = 256;
 
+// CAN (0x18) returns the xterm parser to ground state, killing any CSI/OSC
+// that may have been sliced when bytes were dropped. Unlike RIS (\x1bc) it
+// does not clear the screen, scrollback or modes — replaying the snapshot
+// on rebind would otherwise be wiped by the notice itself.
 const OVERFLOW_NOTICE = new TextEncoder().encode(
-  "\x1bc\x1b[2m[terax: dropped output during hibernation]\x1b[0m\r\n",
+  "\x18\x1b[0m\x1b[2m[terax: dropped output during hibernation]\x1b[0m\r\n",
 );
 
 export class DormantRing {
