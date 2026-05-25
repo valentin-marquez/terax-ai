@@ -26,6 +26,7 @@ import {
   setTerminalFontFamily,
   setTerminalLetterSpacing,
   setTerminalFontSize,
+  setTerminalCopyOnSelect,
   setTerminalScrollback,
   setTerminalWebglEnabled,
   setVimMode,
@@ -67,6 +68,9 @@ export function GeneralSection() {
   const showHidden = usePreferencesStore((s) => s.showHidden);
   const terminalWebglEnabled = usePreferencesStore(
     (s) => s.terminalWebglEnabled,
+  );
+  const terminalCopyOnSelect = usePreferencesStore(
+    (s) => s.terminalCopyOnSelect,
   );
   const terminalFontFamily = usePreferencesStore((s) => s.terminalFontFamily);
   const terminalLetterSpacing = usePreferencesStore(
@@ -217,6 +221,15 @@ export function GeneralSection() {
           <Switch
             checked={terminalWebglEnabled}
             onCheckedChange={(v) => void setTerminalWebglEnabled(v)}
+          />
+        </SettingRow>
+        <SettingRow
+          title="Copy on select"
+          description="Automatically copy selected text to the clipboard, no shortcut needed. Matches kitty / iTerm2 behavior."
+        >
+          <Switch
+            checked={terminalCopyOnSelect}
+            onCheckedChange={(v) => void setTerminalCopyOnSelect(v)}
           />
         </SettingRow>
         <SettingRow

@@ -9,6 +9,7 @@ import { SerializeAddon } from "@xterm/addon-serialize";
 import { WebLinksAddon } from "@xterm/addon-web-links";
 import { WebglAddon } from "@xterm/addon-webgl";
 import { Terminal } from "@xterm/xterm";
+import { createCopyOnSelectHandler } from "./copyOnSelect";
 import { readClipboardImagePath } from "./imagePaste";
 import { terminalWordNavigationSequence } from "./keymap";
 
@@ -199,6 +200,12 @@ function createSlot(): Slot {
     if (leafId === null) return;
     adapter?.resolveLeaf(leafId)?.writeToPty(data);
   });
+
+  const copyOnSelect = createCopyOnSelectHandler({
+    isEnabled: () => usePreferencesStore.getState().terminalCopyOnSelect,
+    copy: (text) => void navigator.clipboard.writeText(text).catch(() => {}),
+  });
+  term.onSelectionChange(() => copyOnSelect.notify(term.getSelection()));
 
   slots.push(slot);
   return slot;
